@@ -75,6 +75,8 @@ contract FreelancerEscrow {
     )
         payable
     {
+        require(_freelancer != address(0), "Invalid freelancer");
+        require(_mediator != address(0), "Invalid mediator");
         require(msg.value > 0, "Project fee required");
         require(_numMilestones > 0, "Must have at least 1 milestone");
 
@@ -92,6 +94,8 @@ contract FreelancerEscrow {
      * @notice The freelancer deposits their stake, moving the contract into "InProgress" state.
      */
     function freelancerDepositStake() external payable {
+
+
         require(contractState == State.Created, "Contract must be in Created state");
         require(msg.sender == freelancer, "Only the freelancer can deposit stake");
         require(msg.value == freelancerStake, "Incorrect stake amount");
@@ -257,4 +261,25 @@ contract FreelancerEscrow {
         // selfdestruct to clean up contract storage
         // selfdestruct(payable(client));
     }
+    event EtherReceived(address indexed sender, uint256 amount);
+
+    /**
+    * @notice Allows the contract to receive ETH directly (e.g., tips, refunds, or future logic).
+    */
+    receive() external payable {
+        emit EtherReceived(msg.sender, msg.value);
+    }
+    function getMilestoneStatus(uint256 i) external view returns (bool, bool, bool, uint256) {
+        Milestone memory m = milestones[i];
+        return (m.completed, m.approved, m.disputed, m.timestamp);
+    }
+
+    /**
+    * @notice Fallback to handle unknown function calls or raw ETH with data.
+    */
+    fallback() external payable {
+        // Handle unexpected calls or direct ETH with data
+        }
+
+    
 }
