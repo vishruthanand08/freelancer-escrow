@@ -6,6 +6,7 @@ module.exports = {
   networks: {
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL,
+      accounts: [process.env.CLIENT_PRIVATE_KEY]
     }
   },
   etherscan: {
